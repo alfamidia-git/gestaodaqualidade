@@ -1,0 +1,40 @@
+package com.gestaodaqualidade.rest;
+
+import com.gestaodaqualidade.dto.request.EmpresaRequest;
+import com.gestaodaqualidade.dto.response.EmpresaListaResponse;
+import com.gestaodaqualidade.model.Empresa;
+import com.gestaodaqualidade.service.EmpresaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/empresa")
+public class EmpresaRest {
+
+    @Autowired
+    EmpresaService empresaService;
+
+    @PostMapping("/criarNovaEmpresa")
+    public ResponseEntity<Empresa> criarEmpresa(@RequestBody EmpresaRequest empresa){
+        return this.empresaService.criarOuAlterarEmpresa(empresa);
+    }
+
+    @PutMapping("/alterarEmpresa")
+    public ResponseEntity<Empresa> alterarEmpresa(@RequestBody EmpresaRequest empresa){
+        return this.empresaService.criarOuAlterarEmpresa(empresa);
+    }
+
+    @GetMapping("/listarTodasEmpresas")
+    public ResponseEntity<List<EmpresaListaResponse>> buscarEmpresas(){
+        return this.empresaService.buscarTodasEmpresas();
+    }
+
+    @GetMapping("detalhe/{id}")
+    public ResponseEntity<Empresa> buscarDetalhe(@PathVariable Long id){
+        return this.empresaService.buscarDetalhe(id);
+    }
+
+}
