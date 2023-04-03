@@ -413,5 +413,34 @@ public class EmpresaService {
     }
 
 
+    public ResponseEntity<List<ProcessoCriadoResponse>> verProcessosAtrasados(Usuario usuario) {
 
+        List<Processo> processos = null;
+
+        LocalDate dataAtual = LocalDate.now();
+
+        if(usuario.getPermissao() == Usuario.Permissao.MASTER){
+            processos = this.processoRepository.buscarAtrasados(dataAtual);
+        }else{
+            processos = this.processoRepository.buscarPorEmpresaEAtrasados(usuario.getEmpresa(), dataAtual);
+        }
+        List<ProcessoCriadoResponse> responses = new ArrayList<>();
+        for(Processo processo : processos){
+            List<Etapa> etapas = this.etapaRepository.findByProcesso(processo);
+
+            for(Etapa etapa : etapas){
+                List<Dado> dados = this.dadoRepository.findByEtapa(etapa);
+                etapa.setDados(dados);
+            }
+
+
+            processo.setEtapas(etapas);
+
+            ProcessoCriadoResponse processoCriadoResponse = new ProcessoCriadoResponse(processo);
+
+            responses.add(processoCriadoResponse);
+        }
+
+        return ResponseEntity.ok(responses);
+    }
 }

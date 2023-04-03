@@ -36,9 +36,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authz ->
                                 authz.requestMatchers(HttpMethod.POST, "/login").permitAll()
+                                        .requestMatchers("/error").permitAll()
                                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                         .requestMatchers("/empresa/**").hasAnyRole("MASTER", "ADM")
                                         .requestMatchers("/usuario/criarSenha").permitAll()
+                                        .requestMatchers("/usuario/resetarSenha").permitAll()
                                         .requestMatchers("/usuario/**").hasAnyRole("MASTER", "ADM")
                                         .anyRequest().authenticated()
                                         .and()

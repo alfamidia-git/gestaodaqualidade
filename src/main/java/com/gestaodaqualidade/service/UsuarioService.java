@@ -67,7 +67,7 @@ public class UsuarioService implements UserDetailsService {
         usuario = this.repository.save(usuario);
 
         if(criarUsuario){
-            emailService.enviarEmail(usuarioRequest.getEmail(), "Seu código de verificação é: <b>" + usuario.getCodigoVerificacao() + "</b>",
+            emailService.enviarEmail(usuarioRequest.getEmail(), "Seu código de verificação é: + usuario.getCodigoVerificacao()",
                     "Usuário criado no sistema de qualidade");
         }
 
@@ -105,5 +105,20 @@ public class UsuarioService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return this.repository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado: " + email));
+    }
+
+    public ResponseEntity<Void> resetarSenha(String email) {
+        Usuario usuario = this.repository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não localizado"));
+
+        String codigoVerificao = UUID.randomUUID().toString().toUpperCase();
+        usuario.setCodigoVerificacao(codigoVerificao);
+
+        this.repository.save(usuario);
+
+        emailService.enviarEmail(email, "Seu código de verificação é:" + usuario.getCodigoVerificacao(),
+                "SISTEMA DA QUALIDADE - Alterar Senha");
+
+        return ResponseEntity.ok(null);
     }
 }
